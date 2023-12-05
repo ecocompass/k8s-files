@@ -12,8 +12,7 @@ eval $(minikube -p minikube docker-env)
 for flask app:
 
  - docker build -t flask-app:latest . 
- - kubectl apply -f
- - flask-deployment.yaml 
+ - kubectl apply -f flask-deployment.yaml 
  - kubectl apply -f flask-service.yaml 
  - minikube service flask-app-service
 
