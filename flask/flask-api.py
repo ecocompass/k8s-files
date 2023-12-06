@@ -1,4 +1,5 @@
 import pika
+import requests
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -9,11 +10,19 @@ connection_params = pika.ConnectionParameters(
     port=5672,
     credentials=pika.PlainCredentials(username='user', password='M99hwSzjBIhK2WC7')
 )
-
+url = "insert server URL here"
+url_out = "Insert Java's URL"
 # Simulate a core server API endpoint
 @app.route('/input', methods=['GET'])
 def get_test():
     param1 = str(request.args.get('param'))
+    try:
+        response = requests.get(url, timeout=5, verify=False)
+        response.raise_for_status()
+        # print(response.text)
+    except:
+        print("Server Down")
+        return jsonify({'message': 'Server Down'}), 404
 
     # Establish a new connection and channel for each request
     with pika.BlockingConnection(connection_params) as connection:
@@ -31,6 +40,13 @@ def get_test():
 
 @app.route('/output', methods=['GET'])
 def push_test():
+    try:
+        response = requests.get(url_out, timeout=5, verify=False)
+        response.raise_for_status()
+        # print(response.text)
+    except:
+        print("Server Down")
+        return jsonify({'message': 'Server Down'}), 404
     # Establish a new connection and channel for each request
     with pika.BlockingConnection(connection_params) as connection:
         channel = connection.channel()
